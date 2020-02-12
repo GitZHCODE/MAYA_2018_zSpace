@@ -1,0 +1,80 @@
+//check if usersetup.mel exists and add it in case
+string $PathUS = `internalVar -usd`;
+
+if(`filetest -f ($PathUS + "userSetup.mel")`)
+{
+	//check if line is already in
+	$fileId = `fopen ($PathUS+"userSetup.mel") "rt"`;
+	string $Array[];
+	clear $Array;
+	int $ZExists = 0;
+		
+	string $nextLine = `fgetline $fileId`;
+	while ( size( $nextLine ) > 0 )
+	{
+		$Array[size($Array)] = $nextLine;
+		print $nextLine;
+		if($nextLine == "//zSpace\n") $ZExists = 1;
+		$nextLine = `fgetline $fileId`;
+	}
+	fclose($fileId);
+		
+	if($ZExists == 0)
+	{
+		$fileDH = `fopen ($PathUS+"userSetup.mel") "a"`;
+        fprint $fileDH ("\n//zSpace\nsource \"" + $PathUS + "maya2018_zSpace_menu.mel\";\n");
+		fclose $fileDH;
+	}
+}
+else
+{
+	$fileDH = `fopen ($PathUS+"userSetup.mel") "a"`;
+    fprint $fileDH ("\n//zSpace\nsource \"" + $PathUS + "maya2018_zSpace_menu.mel\";\n");
+	fclose $fileDH;
+}
+
+//add shelf menu
+if(`layout -q -ex "zSpace"`)
+{
+	string $ShelfButtons[] = `shelfLayout -q -ca "zSpace"`;
+	
+	if(size($ShelfButtons) != 1) // change this count as more plugins get added
+	{
+		for($Con in $ShelfButtons)
+		{
+			deleteUI -control $Con;
+		}
+		shelfTabRefresh;
+	
+		// IO
+		string $Im1Path = ($PathUS + "icons/io.png");
+		shelfButton -w 30 -p "zSpace" -annotation "Opens the zSpace IO window" -image1 $Im1Path -command ("source \"" + $PathUS + "maya2018_zSpace_IO.mel\"");
+	}
+
+    print "Shelf buttons loaded.\n";
+}
+else
+{
+	addNewShelfTab "zSpace";
+
+	// IO
+    string $Im1Path = ($PathUS + "icons/io.png");
+	shelfButton -w 30 -p "zSpace" -annotation "Opens the zSpace IO window" -image1 $Im1Path -command ("source \"" + $PathUS + "maya2018_zSpace_IO.mel\"");
+        
+   print "Shelf buttons loaded.\n";
+}
+
+//add menu
+buildFileMenu(); 
+global string $myMenuMain;
+if (`menu -exists zSpace`)
+    deleteUI -m zSpace;
+
+global string $gMainWindow;
+$myMenuMain = `menu -p $gMainWindow -tearOff true -l "zSpace" zSpace`;
+
+// IO
+string $Im1Path = ($PathUS + "icons/io.png");
+menuItem -p $myMenuMain -l "zSpace IO" -i $Im1Path -command ("source \"" + $PathUS + "maya2018_zSpace_IO.mel\"");
+
+print "Menus loaded.\n";

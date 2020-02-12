@@ -1,0 +1,3 @@
+// setup of zSpace tools
+string $PathUS = `internalVar -usd`;
+eval ("source \"" + $PathUS + "maya2018_zSpace_menu.mel\"");
