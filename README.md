@@ -29,12 +29,14 @@ The documentation is under development. You can find a wip version of it [here](
 ##### export curves to TXT
 * with individual curves selected it exports them as individual graphs
 * with a parent group selected it exports all children curves as one graph
-
 ##### import mesh JSON
 * check the **import multiple files** to import multiple files and select one file in the dialog window
 * the naming of the files has to follow the same structure like the **export meshes to JSON** is producing _(FILENAME_0.json, FILENAME_1.json, FILENAME_2.json,)_
 * check **import colors** to receive the color data
-
 ##### export meshes to JSON
 * check **export colors** to add the color data
 * if multiple meshes are selected for export it will export one .json file per mesh with the _0 suffix automatically added
+---
+### zSpace_3DGS
+3D Graphic Statics Plugin
+##### documentation will be added soon.

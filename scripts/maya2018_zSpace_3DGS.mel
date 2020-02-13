@@ -1,0 +1,181 @@
+//----------------------------------------
+// MAYA 2018 zSPACE 3DGS
+//----------------------------------------
+global string $version = "v0.3"; // Feb 2020
+global string $pluginFileName = "maya2018_zSpace_3DGS.mll";
+global string $nodeName = "maya_zSpace_3dgs";
+global string $windowName = "zSpace_3DGS";
+
+// ----- unload/load plugin
+if(`pluginInfo -q -l $pluginFileName`)
+{
+    flushUndo;
+    unloadPlugin -f $pluginFileName;
+}
+loadPlugin($pluginFileName);
+
+// ----- clean up
+global proc cleanUp()
+{
+    global string $windowName;
+    global string $pluginFileName;
+
+    flushUndo;
+    unloadPlugin -f $pluginFileName;
+
+    if(`window -exists $windowName`) deleteUI -window $windowName;
+}
+
+scriptJob -e "NewSceneOpened" cleanUp;
+scriptJob -e "SceneOpened" cleanUp;
+
+global proc cleanFile()
+{   
+    global string $pluginFileName;
+    global string $nodeName;
+
+    select -r $nodeName;
+    select -add resultMesh;
+    select -add polypackingMesh;
+    doDelete;
+    
+    //// change back to viewport 2.0
+    setRendererInModelPanel "vp2Renderer" modelPanel1;
+    setRendererInModelPanel "vp2Renderer" modelPanel2;
+    setRendererInModelPanel "vp2Renderer" modelPanel3;
+    setRendererInModelPanel "vp2Renderer" modelPanel4;
+
+    //// change to smoothShaded
+    modelEditor -e -displayAppearance smoothShaded modelPanel1;
+    modelEditor -e -displayAppearance smoothShaded modelPanel2;
+    modelEditor -e -displayAppearance smoothShaded modelPanel3;
+    modelEditor -e -displayAppearance smoothShaded modelPanel4;
+
+    flushUndo;
+    unloadPlugin -f $pluginFileName;
+}
+
+// ----- variables & dialog
+string $seln[] = `filterExpand -sm 12`;
+
+if(size($seln) == 0)
+{
+    confirmDialog -message "Please select Polyhedra." -button "Ok";
+    error "No Polyhedra selected!";
+}
+
+//// freeze transformation for all polyhedra
+makeIdentity -apply true -t 1 -r 1 -s 1 -n 0 -pn 1;
+
+//// define working directory
+confirmDialog -title "zSpace_3DGS" -icon "information" -message "Please define the working directory/ folder in the next dialog window." -button "Ok";
+string $directory[] =`fileDialog2 -fm 3 -cap "Select your working directory"`;
+if(size($directory) == 0) error "Cancled working directory selection";
+
+// ----- change viewport to legacy renderer
+setRendererInModelPanel base_OpenGL_Renderer modelPanel1;
+setRendererInModelPanel base_OpenGL_Renderer modelPanel2;
+setRendererInModelPanel base_OpenGL_Renderer modelPanel3;
+setRendererInModelPanel base_OpenGL_Renderer modelPanel4;
+// ----- change viewport to wireframe
+modelEditor -e -displayAppearance wireframe modelPanel1;
+modelEditor -e -displayAppearance wireframe modelPanel2;
+modelEditor -e -displayAppearance wireframe modelPanel3;
+modelEditor -e -displayAppearance wireframe modelPanel4;
+
+// ----- make connections
+string $inputMeshes[];
+    
+string $node = `createNode maya_zSpace_3DGS`;
+string $mesh = `createNode mesh`;
+string $explodemesh = `createNode mesh`;
+  
+setAttr -type "string" ( $node + ".fileDirectory" ) $directory;
+    
+for($i =0; $i <  size($seln); $i++)
+{
+    $inputMeshes[$i] = $seln[$i];
+}
+    
+for($i=0; $i<size($inputMeshes); $i++)
+{
+    string $inMesh_m = $inputMeshes[$i];       
+    connectAttr -f ( $inMesh_m + ".outMesh") ( $node +".inMeshes[" + $i + "]");
+}
+
+connectAttr -f ( $node + ".outMesh") ( $mesh+".inMesh" );
+connectAttr -f ( $node + ".outMesh_explode") ( $explodemesh+".inMesh" );
+connectAttr -f time1.outTime ( $node + ".time" );
+
+select -r $mesh;
+sets -e -forceElement initialShadingGroup;
+toggleShadeMode;
+    
+select -r $explodemesh;
+sets -e -forceElement initialShadingGroup;
+toggleShadeMode;    
+          
+$parent = `listRelatives - parent $node` ;
+rename $parent[0] $nodeName ;
+    
+$parent = `listRelatives - parent $mesh` ;
+rename $parent[0] "resultMesh" ;  
+    
+$parent = `listRelatives - parent $explodemesh` ;
+rename $parent[0] "polypackingMesh" ;
+
+// ----- procs for window 
+global proc setupPolyhedra()
+{
+    setAttr "maya_zSpace_3DGS.reset" 1;
+    print("setup/ reset\n"); 
+}
+
+global proc exportGraphCurves()
+{
+    setAttr "maya_zSpace_3DGS.exportGraphCurves" 1;
+    print("Curves successfully exported to Maya.\n");   
+}
+
+global proc exportJson()
+{
+    setAttr "maya_zSpace_3DGS.exportJson" 1;  
+    print("Json successfully exported to defined directory.\n");  
+}
+
+global proc fabricationScale()
+{
+    setAttr "maya_zSpace_3DGS.fabricationScale" 1;
+}
+
+// ----- create Window 
+if(`window -exists $windowName`) deleteUI -window $windowName;
+
+window -bgc 0.1 0.1 0.1 -t ($windowName + " " + $version) -cc cleanFile $windowName;
+rowColumnLayout;
+
+text -label "Setup";
+button -w 200 -l "Setup/ Reset" -c setupPolyhedra; 
+separator -height 40 -style "double";
+
+text -label "Compute Equilibrium";
+attrControlGrp -a ($nodeName +".AngleTolerance");
+attrControlGrp -a ($nodeName +".minMax_formEdge");  	                 
+attrControlGrp -a ($nodeName +".maxIterations");
+attrControlGrp -a ($nodeName +".timeStep");
+separator -height 20 -style "none";
+attrControlGrp -a ($nodeName +".computeEquilibrium");
+separator -height 40 -style "double";
+
+text -label "Display";
+attrControlGrp -a ($nodeName +".displayForceVectors"); 
+attrControlGrp -a ($nodeName +".displayForceVectorLength"); 		     
+separator -height 40 -style "double";
+
+text -label "IO";
+attrControlGrp -a ($nodeName +".fabricationMaxLength");
+button -w 200 -l "Scale to max fabrication length" -c fabricationScale; 
+button -w 200 -l "Export Graph Cruves to Maya" -c exportGraphCurves; 
+button -w 200 -l "Export Json to Directory" -c exportJson; 
+           	          
+showWindow $windowName;

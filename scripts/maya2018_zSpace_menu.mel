@@ -38,7 +38,7 @@ if(`layout -q -ex "zSpace"`)
 {
 	string $ShelfButtons[] = `shelfLayout -q -ca "zSpace"`;
 	
-	if(size($ShelfButtons) != 1) // change this count as more plugins get added
+	if(size($ShelfButtons) != 2) // change this count as more plugins get added
 	{
 		for($Con in $ShelfButtons)
 		{
@@ -49,6 +49,10 @@ if(`layout -q -ex "zSpace"`)
 		// IO
 		string $Im1Path = ($PathUS + "icons/io.png");
 		shelfButton -w 30 -p "zSpace" -annotation "Opens the zSpace IO window" -image1 $Im1Path -command ("source \"" + $PathUS + "maya2018_zSpace_IO.mel\"");
+
+		// 3DGS
+		string $Im2Path = ($PathUS + "icons/3dgs.png");
+		shelfButton -w 60 -p "zSpace" -annotation "Opens the zSpace 3DGS window" -image1 $Im2Path -command ("source \"" + $PathUS + "maya2018_zSpace_3DGS.mel\""); 	
 	}
 
     print "Shelf buttons loaded.\n";
@@ -60,8 +64,11 @@ else
 	// IO
     string $Im1Path = ($PathUS + "icons/io.png");
 	shelfButton -w 30 -p "zSpace" -annotation "Opens the zSpace IO window" -image1 $Im1Path -command ("source \"" + $PathUS + "maya2018_zSpace_IO.mel\"");
-        
-   print "Shelf buttons loaded.\n";
+
+	// 3DGS
+	string $Im2Path = ($PathUS + "icons/3dgs.png");
+	shelfButton -w 60 -p "zSpace" -annotation "Opens the zSpace 3DGS window" -image1 $Im2Path -command ("source \"" + $PathUS + "maya2018_zSpace_3DGS.mel\""); 
+	print "Shelf buttons loaded.\n";
 }
 
 //add menu
@@ -75,6 +82,10 @@ $myMenuMain = `menu -p $gMainWindow -tearOff true -l "zSpace" zSpace`;
 
 // IO
 string $Im1Path = ($PathUS + "icons/io.png");
-menuItem -p $myMenuMain -l "zSpace IO" -i $Im1Path -command ("source \"" + $PathUS + "maya2018_zSpace_IO.mel\"");
+menuItem -p $myMenuMain -l "zSpace_IO" -i $Im1Path -command ("source \"" + $PathUS + "maya2018_zSpace_IO.mel\"");
+
+// 3DGS
+string $Im2Path = ($PathUS + "icons/3dgs.png");
+menuItem -p $myMenuMain -l "zSpace_3DGS" -i $Im2Path -command ("source \"" + $PathUS + "maya2018_zSpace_TNA.mel\"");	
 
 print "Menus loaded.\n";
