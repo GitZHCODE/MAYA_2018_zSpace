@@ -15,9 +15,12 @@ v0.4
 * save and close the file
 * in the same directory (*C:\Users\%USERPROFILE%\Documents\maya\2018\scripts*) delete the follworing files/ folders:
   * folder called **icons**
+  * file called **maya2018_zSpace_menu.mel**
   * file called **maya2018_zSpace_IO.mel**
+  * file called **maya2018_zSpace_3DGS.mel**
 * in your **plug-ins** directory (*C:\Program Files\Autodesk\Maya2018\bin\plug-ins*) delete the following files:
   * file called **maya2018_zSpace_IO.mll**
+  * file called **maya2018_zSpace_3DGS.mll**
 * at that point the zSpace plugin is deinstalled
 * to reinstall after e.g. pulling a newer version of the plugin follow the steps of **Install** again
 ---
