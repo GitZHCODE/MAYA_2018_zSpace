@@ -3,7 +3,7 @@
 //----------------------------------------
 global string $version = "v0.4"; // Feb 2020
 global string $pluginFileName = "maya2018_zSpace_IO.mll";
-global string $nodeName = "maya_zSpace_JSON";
+global string $nodeName = "maya_zSpace_IO";
 global string $windowName = "zSpace_IO";
 string $node;
 string $emptyMesh;
@@ -214,7 +214,7 @@ global proc exportMeshJSON()
     if(size($filePathExMeshJSON) == 0) error "No file selected!";
 
     // create necessary nodes
-    $node = `createNode -n "tmpNode" maya_zSpace_JSON`;
+    $node = `createNode -n "tmpNode" maya_zSpace_IO`;
     $emptyMesh = `createNode mesh`;
     
     // rename node parent to select it later	             
@@ -276,7 +276,7 @@ global proc importMeshJSON()
  	$importMultiFiles = `checkBox -q -v checkBoxMultiFiles`;
  	
     // create necessary nodes
-	$node = `createNode -n "tmpNode" maya_zSpace_JSON`;
+	$node = `createNode -n "tmpNode" maya_zSpace_IO`;
 
     // rename node parent to select it later	
 	$parent = `listRelatives - parent $node` ;
