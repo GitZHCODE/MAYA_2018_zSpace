@@ -294,11 +294,12 @@ global proc importMeshJSON()
         setAttr ("tmpNode.importMeshJson") 1;
         setAttr ("tmpNode.importMeshColors") $importCol;
 
-        refresh; // refresh necessary, otherwise it is not importing
-
         // add the importMesh to the initialShaderGroup
         select $importMesh;
         sets -e -forceElement initialShadingGroup;
+
+        refresh; // refresh necessary, otherwise it is not importing
+
         toggleShadeMode;
         polySetToFaceNormal;
 
@@ -364,6 +365,9 @@ global proc importMeshJSON()
             // add the importMesh to the initialShaderGroup
             select $importMesh;
             sets -e -forceElement initialShadingGroup;
+            
+            refresh; // refresh necessary, otherwise it is not importing
+
             toggleShadeMode;
             polySetToFaceNormal;
         }
