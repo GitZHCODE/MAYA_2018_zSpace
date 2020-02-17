@@ -1,7 +1,7 @@
 //----------------------------------------
 // MAYA2018 zSPACE IO for GitHub
 //----------------------------------------
-global string $version = "v0.4"; // Feb 2020
+global string $version = "v0.5"; // Feb 2020
 global string $pluginFileName = "maya2018_zSpace_IO.mll";
 global string $nodeName = "maya_zSpace_IO";
 global string $windowName = "zSpace_IO";
