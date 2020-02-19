@@ -1,0 +1,110 @@
+//----------------------------------------
+// MAYA zSPACE VARIABLE EXTRUDE 2018
+//----------------------------------------
+global string $version = "v0.1"; // Feb 2020
+global string $pluginFileName = "maya2018_zSpace_VE.mll";
+global string $nodeName = "Maya_zSpace_VE";
+global string $windowName = "zSpace_VE";
+
+// ----- unload/load plugin
+if(`pluginInfo -q -l $pluginFileName`)
+{
+    flushUndo;
+    unloadPlugin -f $pluginFileName;
+}
+loadPlugin($pluginFileName);
+
+// ----- clean up
+global proc cleanUp()
+{
+    global string $windowName;
+    global string $pluginFileName;
+
+    flushUndo;
+    unloadPlugin -f $pluginFileName;
+
+    if(`window -exists $windowName`) deleteUI -window $windowName;
+}
+
+scriptJob -e "NewSceneOpened" cleanUp;
+scriptJob -e "SceneOpened" cleanUp;
+
+global proc closeWindow()
+{
+    global string $pluginFileName;
+
+    flushUndo;
+
+    select -r "Maya_zSpace_VE";
+    doDelete;
+
+    unloadPlugin -f $pluginFileName;
+}
+
+// ---------------------------------  make history connections ;
+
+string $seln[] = ` ls -sl `;
+
+if(size($seln) == 0)
+{
+    confirmDialog -title $windowName -icon "information" -message "Please select a mesh." -button "Ok";
+    error "No mesh selected!";
+}
+
+string $colorMesh_m = $seln[0];
+    
+string $node = ` createNode maya_zSpace_VE ` ;
+string $mesh = ` createNode mesh `;
+
+connectAttr -f ( $colorMesh_m + ".outMesh") ( $node +".inMesh" );
+connectAttr -f ( $node + ".outMesh") ( $mesh+".inMesh" );
+
+select -r $mesh;
+sets -e -forceElement initialShadingGroup;
+toggleShadeMode;
+    
+          
+$parent = `listRelatives - parent $node` ;
+rename $parent[0] "Maya_zSpace_VE" ;
+    
+$parent = `listRelatives - parent $mesh` ;
+rename $parent[0] "resultMesh" ;
+
+// ---------------------------------  create Window ;
+if(`window -exists $windowName`) deleteUI -window $windowName;
+
+window -bgc 0.1 0.1 0.1 -t ($windowName + " " + $version) -cc closeWindow $windowName;
+columnLayout;
+
+attrControlGrp -label "use Vertex Color:"  -a ($nodeName +".useVertexColor");
+separator -height 20 -style "double";
+            		
+// OFFSET
+text  -label "Face Offset " -fn "boldLabelFont";
+attrControlGrp -label "Offset:"  -a ($nodeName +".offsetExtrude");
+attrControlGrp -label "use Only Boundary:"  -a ($nodeName +".useOnlyBoundary");
+attrControlGrp -label "Min Offset:"  -a ($nodeName +".min_faceOffset");
+attrControlGrp -label "Max Offset:"  -a ($nodeName +".max_faceOffset");
+attrControlGrp -label "keep Existing Faces:"  -a ($nodeName +".keepExistingFaces");
+separator -height 20 -style "double";
+			
+// THICKNESS
+text  -label "Face Thickness " -fn "boldLabelFont";
+attrControlGrp -label "Thickness:"  -a ($nodeName +".thicknessExtrude");
+attrControlGrp -label "Min Thickness:"  -a ($nodeName +".min_faceThickness");
+attrControlGrp -label "Max Thickness:"  -a ($nodeName +".max_faceThickness");
+separator -height 20 -style "double";
+			
+// UPDATE
+text  -label "Update " -fn "boldLabelFont";
+attrControlGrp -label "Topology:"  -a ($nodeName +".updateMeshTopology");
+attrControlGrp -label "Positions:"  -a ($nodeName +".updatePositions");
+attrControlGrp -label "Color:"  -a ($nodeName +".updateColors");
+separator -height 20 -style "double";
+
+// OUTPUT
+text  -label "Output " -fn "boldLabelFont";
+attrControlGrp -label "Copy Color:"  -a ($nodeName +".copyColors");
+separator -height 20 -style "double";
+   
+showWindow $windowName;
