@@ -1,0 +1,161 @@
+//----------------------------------------
+// MAYA 2018 zSPACE FDM
+//----------------------------------------
+global string $version = "v0.3"; // Oct 2020
+global string $pluginFileName = "maya_zSpace_FDM_2018.mll";
+global string $nodeName = "mayaVault_FDM";
+global string $windowName = "zSpace_FDM";
+
+string $exportJSON =  "myVault";
+
+global proc unloadPlugs()
+{
+    global string $windowName;
+    global string $pluginFileName;
+
+    print("unloadingPlugs \n ")    ;
+    unloadPlugin $pluginFileName;
+    
+    if(`window -exists $windowName`) deleteUI -window $windowName;
+}
+
+scriptJob -e "NewSceneOpened" unloadPlugs;
+scriptJob -e "SceneOpened" unloadPlugs;
+
+// ----- make connections
+catch ( `loadPlugin("maya_zSpace_FDM_2018.mll") `);
+{
+    string $seln[] = `filterExpand -sm 12`;
+
+    if(size($seln) == 0)
+    {
+        confirmDialog -message "Please select Polyhedra." -button "Ok";
+        error "No Polyhedra selected!";
+    }
+
+    //// define working directory
+    confirmDialog -title "zSpace_FDM" -icon "information" -message "Please define the working directory/ folder in the next dialog window." -button "Ok";
+    string $directory[] =`fileDialog2 -fm 3 -cap "Select your working directory"`;
+    if(size($directory) == 0) error "Canceled working directory selection";
+
+    string $colorMesh_m = $seln[0];
+    
+    string $node = ` createNode maya_zSpace_FDM ` ;
+    string $mesh = ` createNode mesh `;
+    string $mesh_form = ` createNode mesh `;
+    string $mesh_force = ` createNode mesh `;
+   
+   
+ 
+    setAttr -type "string" ( $node + ".fileDirectory" ) $directory[0];
+    setAttr -type "string" ( $node + ".fileName" ) $exportJSON;
+
+    
+    connectAttr -f ( $colorMesh_m + ".outMesh") ( $node +".inMesh" );
+    connectAttr -f ( $node + ".outMesh") ( $mesh+".inMesh" );
+    connectAttr -f ( $node + ".outMesh_form") ( $mesh_form+".inMesh" );
+    connectAttr -f ( $node + ".outMesh_force") ( $mesh_force+".inMesh" );
+    connectAttr -f time1.outTime ( $node + ".time" );
+
+    select -r $mesh;
+    sets -e -forceElement initialShadingGroup;
+    toggleShadeMode;
+     
+    select -r $mesh_form;
+    sets -e -forceElement initialShadingGroup;
+    toggleShadeMode;
+    
+    select -r $mesh_force;
+    sets -e -forceElement initialShadingGroup;
+    toggleShadeMode;
+     
+          
+    $parent = `listRelatives - parent $node` ;
+    rename $parent[0] "mayaVault_FDM" ;
+    
+    $parent = `listRelatives - parent $mesh` ;
+    rename $parent[0] "resultMesh" ;
+    
+    $parent = `listRelatives - parent $mesh_form` ;
+    rename $parent[0] "formMesh" ;
+    setAttr "formMeshShape.overrideEnabled" 1;
+    setAttr "formMeshShape.overrideShading" 0; 
+    
+    $parent = `listRelatives - parent $mesh_force` ;
+    rename $parent[0] "forceMesh" ;   
+    setAttr "forceMeshShape.overrideEnabled" 1;
+    setAttr "forceMeshShape.overrideShading" 0;
+}
+
+// ----- procs for window 
+global proc VaultReset()
+{
+    setAttr "mayaVault_FDM.reset_Setup" 1;
+    setAttr "mayaVault_FDM.resetBoundarySupports" 1;
+}
+
+global proc VaultResetSupports()
+{
+    setAttr "mayaVault_FDM.resetBoundarySupports" 1;
+}
+
+global proc VaultTensionEdges()
+{
+   FDM_TensionEdges;   
+   setAttr "mayaVault_FDM.computeMesh" 1; 
+}
+
+global proc VaultClearTensionEdges()
+{
+    setAttr "mayaVault_FDM.clearTensionEdges" 1;
+}
+
+global proc VaultSupports()
+{
+   FDM_Supports;   
+   setAttr "mayaVault_FDM.computeMesh" 1;
+}
+
+// ----- create Window  
+window -bgc 0.1 0.1 0.1 -t ($windowName + " " + $version) $windowName;
+columnLayout -adjustableColumn true;
+
+text -label ($windowName + " " + $version + "\nThis plugin is part of zSpace toolkit for Maya 2018. \nCopyright (C) 2020 ZHCODE \nZaha Hadid Computation & Design Research Group");
+text -label "\nAuthors : \nVishu Bhooshan <vishu.bhooshan@zaha-hadid.com> \nLeo Bieling <leo.bieling@zaha-hadid.com>\n\n";
+
+// Setup
+text  -label "0 Setup: " -fn "boldLabelFont" ;
+//frameLayout -w 500 -cll 1 -cl 1 -label "0 Setup" ;
+//button  -w 250 -h 25 -l "Reset" -c VaultReset ;
+attrControlGrp -a ($nodeName +".reset_Setup");
+attrControlGrp -a ($nodeName +".setupToggle");             
+separator -height 20 -style "double";
+
+// constraints
+//frameLayout -w 500 -cll 1 -cl 1 -label "1 Constraints" ;
+text  -label "1 Constraints: " -fn "boldLabelFont" ;
+attrControlGrp -a ($nodeName +".appendSupports");
+button  -w 250 -h 25 -l "Supports" -c VaultSupports ;
+button  -w 250 -h 25 -l "Reset Boundary Supports" -c VaultResetSupports ;
+separator -height 20 -style "double";
+
+// TensionEdges
+//frameLayout -w 500 -cll 1 -cl 1 -label "2 TensionEdges" ;
+text  -label "2 TensionEdges: " -fn "boldLabelFont" ;
+attrControlGrp -a ($nodeName +".appendTensionEdges");
+button  -w 250 -h 25 -l "Tension Edges" -c VaultTensionEdges ;
+button  -w 250 -h 25 -l "Clear Tension Edges" -c VaultClearTensionEdges ;
+separator -height 20 -style "double";
+
+// Equlibrium
+//frameLayout -w 500 -cll 1 -cl 1 -label "3 Equlibrium" ;
+text  -label "3 Equlibrium: " -fn "boldLabelFont" ;
+attrControlGrp -a ($nodeName +".forceDensityMin");
+attrControlGrp -a ($nodeName +".forceDensityMax"); 	          
+attrControlGrp -a ($nodeName +".minThickness");
+attrControlGrp -a ($nodeName +".maxThickness");
+attrControlGrp -a ($nodeName +".maxIterations");  	          
+attrControlGrp -a ($nodeName +".equilibrium");
+attrControlGrp -a ($nodeName +".equilibriumToggle");  	          
+  	         
+showWindow $windowName;  

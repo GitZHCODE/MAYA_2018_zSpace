@@ -1,7 +1,7 @@
 //----------------------------------------
 // MAYA zSPACE VARIABLE EXTRUDE 2018
 //----------------------------------------
-global string $version = "v0.1"; // Feb 2020
+global string $version = "v0.2"; // Oct 2020
 global string $pluginFileName = "maya2018_zSpace_VE.mll";
 global string $nodeName = "Maya_zSpace_VE";
 global string $windowName = "zSpace_VE";
@@ -20,10 +20,10 @@ global proc cleanUp()
     global string $windowName;
     global string $pluginFileName;
 
+    if(`window -exists $windowName`) deleteUI -window $windowName;
+    
     flushUndo;
     unloadPlugin -f $pluginFileName;
-
-    if(`window -exists $windowName`) deleteUI -window $windowName;
 }
 
 scriptJob -e "NewSceneOpened" cleanUp;
@@ -36,6 +36,7 @@ global proc closeWindow()
     flushUndo;
 
     select -r "Maya_zSpace_VE";
+    select -add "maya_zSpace_VE";
     doDelete;
 
     unloadPlugin -f $pluginFileName;
@@ -74,13 +75,20 @@ rename $parent[0] "resultMesh" ;
 if(`window -exists $windowName`) deleteUI -window $windowName;
 
 window -bgc 0.1 0.1 0.1 -t ($windowName + " " + $version) -cc closeWindow $windowName;
-columnLayout;
 
+columnLayout -adjustableColumn true;
+
+text -label ($windowName + " " + $version + "\nThis plugin is part of zSpace toolkit for Maya 2018. \nCopyright (C) 2020 ZHCODE \nZaha Hadid Computation & Design Research Group");
+text -label "\nAuthors : \nVishu Bhooshan <vishu.bhooshan@zaha-hadid.com> \nLeo Bieling <leo.bieling@zaha-hadid.com>\n\n";
+
+// COLOR
+separator -height 20 -style "double";
+text  -label "Color" -fn "boldLabelFont";
 attrControlGrp -label "use Vertex Color:"  -a ($nodeName +".useVertexColor");
 separator -height 20 -style "double";
             		
 // OFFSET
-text  -label "Face Offset " -fn "boldLabelFont";
+text  -label "Face Offset" -fn "boldLabelFont";
 attrControlGrp -label "Offset:"  -a ($nodeName +".offsetExtrude");
 attrControlGrp -label "use Only Boundary:"  -a ($nodeName +".useOnlyBoundary");
 attrControlGrp -label "Min Offset:"  -a ($nodeName +".min_faceOffset");
@@ -89,22 +97,21 @@ attrControlGrp -label "keep Existing Faces:"  -a ($nodeName +".keepExistingFaces
 separator -height 20 -style "double";
 			
 // THICKNESS
-text  -label "Face Thickness " -fn "boldLabelFont";
+text  -label "Face Thickness" -fn "boldLabelFont";
 attrControlGrp -label "Thickness:"  -a ($nodeName +".thicknessExtrude");
 attrControlGrp -label "Min Thickness:"  -a ($nodeName +".min_faceThickness");
 attrControlGrp -label "Max Thickness:"  -a ($nodeName +".max_faceThickness");
 separator -height 20 -style "double";
 			
 // UPDATE
-text  -label "Update " -fn "boldLabelFont";
+text  -label "Update" -fn "boldLabelFont";
 attrControlGrp -label "Topology:"  -a ($nodeName +".updateMeshTopology");
 attrControlGrp -label "Positions:"  -a ($nodeName +".updatePositions");
 attrControlGrp -label "Color:"  -a ($nodeName +".updateColors");
 separator -height 20 -style "double";
 
 // OUTPUT
-text  -label "Output " -fn "boldLabelFont";
+text  -label "Output" -fn "boldLabelFont";
 attrControlGrp -label "Copy Color:"  -a ($nodeName +".copyColors");
-separator -height 20 -style "double";
    
 showWindow $windowName;

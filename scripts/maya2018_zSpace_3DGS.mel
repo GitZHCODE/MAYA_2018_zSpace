@@ -1,7 +1,7 @@
 //----------------------------------------
 // MAYA 2018 zSPACE 3DGS
 //----------------------------------------
-global string $version = "v0.3"; // Feb 2020
+global string $version = "v0.4"; // Oct 2020
 global string $pluginFileName = "maya2018_zSpace_3DGS.mll";
 global string $nodeName = "maya_zSpace_3dgs";
 global string $windowName = "zSpace_3DGS";
@@ -152,27 +152,27 @@ global proc fabricationScale()
 if(`window -exists $windowName`) deleteUI -window $windowName;
 
 window -bgc 0.1 0.1 0.1 -t ($windowName + " " + $version) -cc cleanFile $windowName;
-rowColumnLayout;
+columnLayout -adjustableColumn true;
+
+text -label ($windowName + " " + $version + "\nThis plugin is part of zSpace toolkit for Maya 2018. \nCopyright (C) 2020 ZHCODE \nZaha Hadid Computation & Design Research Group");
+text -label "\nAuthors : \nVishu Bhooshan <vishu.bhooshan@zaha-hadid.com> \nLeo Bieling <leo.bieling@zaha-hadid.com>\n\n";
 
 text -label "Setup";
 button -w 200 -l "Setup/ Reset" -c setupPolyhedra; 
-separator -height 40 -style "double";
 
-text -label "Compute Equilibrium";
+text -label "\nCompute Equilibrium";
 attrControlGrp -a ($nodeName +".AngleTolerance");
 attrControlGrp -a ($nodeName +".minMax_formEdge");  	                 
 attrControlGrp -a ($nodeName +".maxIterations");
 attrControlGrp -a ($nodeName +".timeStep");
 separator -height 20 -style "none";
 attrControlGrp -a ($nodeName +".computeEquilibrium");
-separator -height 40 -style "double";
 
-text -label "Display";
+text -label "\nDisplay";
 attrControlGrp -a ($nodeName +".displayForceVectors"); 
 attrControlGrp -a ($nodeName +".displayForceVectorLength"); 		     
-separator -height 40 -style "double";
 
-text -label "IO";
+text -label "\nIO";
 attrControlGrp -a ($nodeName +".fabricationMaxLength");
 button -w 200 -l "Scale to max fabrication length" -c fabricationScale; 
 button -w 200 -l "Export Graph Cruves to Maya" -c exportGraphCurves; 

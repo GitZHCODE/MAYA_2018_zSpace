@@ -1,7 +1,7 @@
 //----------------------------------------
 // MAYA2018 zSPACE IO for GitHub
 //----------------------------------------
-global string $version = "v0.5"; // Feb 2020
+global string $version = "v0.6"; // Oct 2020
 global string $pluginFileName = "maya2018_zSpace_IO.mll";
 global string $nodeName = "maya_zSpace_IO";
 global string $windowName = "zSpace_IO";
@@ -382,47 +382,21 @@ global proc importMeshJSON()
 if(`window -exists $windowName`) deleteUI -window $windowName;
 
 window -bgc 0.1 0.1 0.1 -t ($windowName + " " + $version) -cc "flushUndo; unloadPlugin -f $pluginFileName;" $windowName;
-rowColumnLayout -nc 3 -cw 1 180 -cw 2 100 -cw 3 150;
+columnLayout -adjustableColumn true;
 
-text -label "Graph TXT";
-separator -style "none";
-separator -style "none";
+text -label ($windowName + " " + $version + "\nThis plugin is part of zSpace toolkit for Maya 2018. \nCopyright (C) 2020 ZHCODE \nZaha Hadid Computation & Design Research Group");
+text -label "\nAuthors : \nVishu Bhooshan <vishu.bhooshan@zaha-hadid.com> \nLeo Bieling <leo.bieling@zaha-hadid.com>\n\n";
 
+text -label "Graph TXT" -fn "boldLabelFont";
 button -label "export curve group to TXT"  -c exportGraphTXT;
-separator -style "none";
-separator -style "none";
 
-//////////////////////////////
-text -label "";
-text -label "";
-text -label "";
-//////////////////////////////
-
-text -label "Graph JSON";
-separator -style "none";
-separator -style "none";
-
+text -label "\nGraph JSON" -fn "boldLabelFont";
 button -label "export curve(s) to JSON"  -c exportGraphJSON;
-separator -style "none";
-separator -style "none";
-
 button -label "import curve(s) from JSON"  -c importGraphJSON;
-separator -style "none";
-separator -style "none";
 
-//////////////////////////////
-text -label "";
-text -label "";
-text -label "";
-//////////////////////////////
-
-text -label "Mesh JSON";
-separator -style "none";
-separator -style "none";
-
+text -label "\nMesh JSON" -fn "boldLabelFont";
 button -label "export mesh(es) to JSON"  -c exportMeshJSON;
 checkBox -label "export colors" checkBoxExport;
-separator -style "none";
 
 button -label "import mesh(es) from JSON"  -c importMeshJSON;
 checkBox -label "import colors" checkBoxImport;

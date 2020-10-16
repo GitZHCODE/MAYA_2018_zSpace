@@ -38,7 +38,7 @@ if(`layout -q -ex "zSpace"`)
 {
 	string $ShelfButtons[] = `shelfLayout -q -ca "zSpace"`;
 	
-	if(size($ShelfButtons) != 3) // change this count as more plugins get added
+	if(size($ShelfButtons) != 4) // change this count as more plugins get added
 	{
 		for($Con in $ShelfButtons)
 		{
@@ -48,15 +48,19 @@ if(`layout -q -ex "zSpace"`)
 	
 		// IO
 		string $Im1Path = ($PathUS + "icons/io.png");
-		shelfButton -w 30 -p "zSpace" -annotation "Opens the zSpace IO window" -image1 $Im1Path -command ("source \"" + $PathUS + "maya2018_zSpace_IO.mel\"");
+		shelfButton -w 30 -p "zSpace" -annotation "Opens the zSpace IO plugin" -image1 $Im1Path -command ("source \"" + $PathUS + "maya2018_zSpace_IO.mel\"");
 
 		// 3DGS
 		string $Im2Path = ($PathUS + "icons/3dgs.png");
-		shelfButton -w 60 -p "zSpace" -annotation "Opens the zSpace 3DGS window" -image1 $Im2Path -command ("source \"" + $PathUS + "maya2018_zSpace_3DGS.mel\"");
+		shelfButton -w 60 -p "zSpace" -annotation "Opens the zSpace 3DGS plugin" -image1 $Im2Path -command ("source \"" + $PathUS + "maya2018_zSpace_3DGS.mel\"");
 
 		// VE
 		string $Im3Path = ($PathUS + "icons/ve.png");
-		shelfButton -w 30 -p "zSpace" -annotation "Opens the zSpace Variable Extrude window" -image1 $Im3Path -command ("source \"" + $PathUS + "maya2018_zSpace_VE.mel\""); 	
+		shelfButton -w 30 -p "zSpace" -annotation "Opens the zSpace Variable Extrude plugin" -image1 $Im3Path -command ("source \"" + $PathUS + "maya2018_zSpace_VE.mel\"");
+
+		// FDM
+		string $Im3Path = ($PathUS + "icons/fdm.png");
+		shelfButton -w 60 -p "zSpace" -annotation "Opens the zSpace Force Density Method plugin" -image1 $Im3Path -command ("source \"" + $PathUS + "maya2018_zSpace_FDM.mel\"");
 	}
 
     print "Shelf buttons loaded.\n";
@@ -67,15 +71,19 @@ else
 
 	// IO
     string $Im1Path = ($PathUS + "icons/io.png");
-	shelfButton -w 30 -p "zSpace" -annotation "Opens the zSpace IO window" -image1 $Im1Path -command ("source \"" + $PathUS + "maya2018_zSpace_IO.mel\"");
+	shelfButton -w 30 -p "zSpace" -annotation "Opens the zSpace IO plugin" -image1 $Im1Path -command ("source \"" + $PathUS + "maya2018_zSpace_IO.mel\"");
 
 	// 3DGS
 	string $Im2Path = ($PathUS + "icons/3dgs.png");
-	shelfButton -w 60 -p "zSpace" -annotation "Opens the zSpace 3DGS window" -image1 $Im2Path -command ("source \"" + $PathUS + "maya2018_zSpace_3DGS.mel\"");
+	shelfButton -w 60 -p "zSpace" -annotation "Opens the zSpace 3DGS plugin" -image1 $Im2Path -command ("source \"" + $PathUS + "maya2018_zSpace_3DGS.mel\"");
 
 	// VE
 	string $Im3Path = ($PathUS + "icons/ve.png");
-	shelfButton -w 30 -p "zSpace" -annotation "Opens the zSpace Variable Extrude window" -image1 $Im3Path -command ("source \"" + $PathUS + "maya2018_zSpace_VE.mel\"");
+	shelfButton -w 30 -p "zSpace" -annotation "Opens the zSpace Variable Extrude plugin" -image1 $Im3Path -command ("source \"" + $PathUS + "maya2018_zSpace_VE.mel\"");
+
+	// FDM
+	string $Im3Path = ($PathUS + "icons/fdm.png");
+	shelfButton -w 60 -p "zSpace" -annotation "Opens the zSpace Force Density Method plugin" -image1 $Im3Path -command ("source \"" + $PathUS + "maya2018_zSpace_FDM.mel\"");
 
 	print "Shelf buttons loaded.\n";
 }
@@ -95,10 +103,14 @@ menuItem -p $myMenuMain -l "zSpace_IO" -i $Im1Path -command ("source \"" + $Path
 
 // 3DGS
 string $Im2Path = ($PathUS + "icons/3dgs.png");
-menuItem -p $myMenuMain -l "zSpace_3DGS" -i $Im2Path -command ("source \"" + $PathUS + "maya2018_zSpace_TNA.mel\"");
+menuItem -p $myMenuMain -l "zSpace_3DGS" -i $Im2Path -command ("source \"" + $PathUS + "maya2018_zSpace_3DGS.mel\"");
 
 // VE
 string $Im3Path = ($PathUS + "icons/ve.png");
 menuItem -p $myMenuMain -l "zSpace_VE" -i $Im3Path -command ("source \"" + $PathUS + "maya2018_zSpace_VE.mel\"");
+
+// FDM
+string $Im3Path = ($PathUS + "icons/fdm.png");
+menuItem -p $myMenuMain -l "zSpace_FDM" -i $Im3Path -command ("source \"" + $PathUS + "maya2018_zSpace_FDM.mel\"");
 
 print "Menus loaded.\n";

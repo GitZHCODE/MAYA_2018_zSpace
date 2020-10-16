@@ -1,6 +1,6 @@
 # Collection of zSpace plugins for maya 2018
 written by Vishu Bhooshan, Leo Bieling and Marko Margeta <br>
-v0.4
+v0.5
 ## Install
 ---
 * copy the content of the **plug-ins** folder to: *C:\Program Files\Autodesk\Maya2018\bin\plug-ins*
@@ -18,9 +18,14 @@ v0.4
   * file called **maya2018_zSpace_menu.mel**
   * file called **maya2018_zSpace_IO.mel**
   * file called **maya2018_zSpace_3DGS.mel**
+  * file called **maya2018_zSpace_VE.mel**
+  * file called **maya2018_zSpace_FDM.mel**
+
 * in your **plug-ins** directory (*C:\Program Files\Autodesk\Maya2018\bin\plug-ins*) delete the following files:
   * file called **maya2018_zSpace_IO.mll**
   * file called **maya2018_zSpace_3DGS.mll**
+  * file called **maya2018_zSpace_VE.mll**
+  * file called **maya_zSpace_FDM_2018.mll**
 * at that point the zSpace plugin is deinstalled
 * to reinstall after e.g. pulling a newer version of the plugin follow the steps of **Install** again
 ---
@@ -42,4 +47,14 @@ The documentation is under development. You can find a wip version of it [here](
 ---
 ### zSpace_3DGS
 3D Graphic Statics Plugin
+##### documentation will be added soon.
+---
+### zSpace_VE
+Variable Extrude Plugin
+##### documentation will be added soon.
+---
+### zSpace_FDM
+Force Density Method Plugin
+##### note
+In some cases we noticed that you need to run Maya 2018 as administrator the very first time you open the plugin.
 ##### documentation will be added soon.
